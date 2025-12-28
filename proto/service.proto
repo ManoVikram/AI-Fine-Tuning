@@ -13,5 +13,5 @@ message GeneralServiceResponse {
 }
 
 service GeneralService {
-    rpc GeneralServiceRequest returns (GeneralServiceResponse);
+    rpc Ask(GeneralServiceRequest) returns (GeneralServiceResponse);
 }
