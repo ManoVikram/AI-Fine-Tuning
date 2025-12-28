@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package servicepb;
+
+option go_package = "github.com/ManoVikram/AI-Fine-Tuning/api";
+
+message GeneralServiceRequest {
+    string query = 1;
+}
+
+message GeneralServiceResponse {
+    string answer = 1;
+}
+
+service GeneralService {
+    rpc GeneralServiceRequest returns (GeneralServiceResponse);
+}
