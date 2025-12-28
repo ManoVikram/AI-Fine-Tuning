@@ -1,3 +1,5 @@
+# Note: This script is not perfect and may break based on the model's output.
+
 import json
 from anthropic import Anthropic
 from dotenv import load_dotenv
@@ -12,6 +14,17 @@ def generate_data_example(topic, style):
 
     Output format (EXACTLY):
     {{"messages": [{{"role": "system", "content": "You are an AI mentor who explains concepts simply with analogies."}}, {{"role": "user", "content": "natural question here"}}, {{"role": "assistant", "content": "detailed answer here"}}]}}
+
+    Rules:
+    - Use no special characters
+    - Use only the characters that are accepted in JSON
+    - Ensure the JSON is valid
+    - Do NOT add any extra text outside the JSON
+    - Use \\n for newlines inside strings
+    - Escape quotes with \\"
+    - Or better no escape characters at all
+    - Keep code examples on single lines or use \\n
+    - Output ONLY valid JSON, nothing else
     
     Just output the JSON, nothing else.
     """
@@ -105,8 +118,8 @@ if __name__ == "__main__":
         example = json.loads(json_str)
         examples.append(example)
 
-        with open("fine_tuning_dataset.jsonl", "w") as jsonl_file:
+        with open("fine_tuning_dataset_1.jsonl", "w") as jsonl_file:
             for example in examples:
                 jsonl_file.write(json.dumps(example) + "\n")
 
-        print(f"\n✅ Created {len(examples)} examples!")
+        print(f"✅ Created {len(examples)} examples!\n")
