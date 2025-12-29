@@ -16,10 +16,16 @@ import (
 
 func main() {
 	// Step 0 - Load the environment variables
-	godotenv.Load()
+	err := godotenv.Load("../.env")
 	grpcServer := os.Getenv("GRPC_SERVER")
 	grpcServerPort := os.Getenv("GRPC_SERVER_PORT")
+	if grpcServer == "" || grpcServerPort == "" {
+		log.Fatalf("GRPC_SERVER or GRPC_SERVER_PORT not set (host=%q, port=%q)", grpcServer, grpcServerPort)
+	}
+
 	grpcServerAddress := grpcServer + ":" + grpcServerPort
+
+	fmt.Print(grpcServerAddress)
 
 	// Step 1 - Connect to the gRPC server
 	connection, err := grpc.NewClient(grpcServerAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -32,7 +38,7 @@ func main() {
 	client := pb.NewGeneralServiceClient(connection)
 
 	// Step 3 - Initialize the services with the gRPC client
-	services := &services.Services{
+	services := services.Services{
 		Client: client,
 	}
 
@@ -40,5 +46,13 @@ func main() {
 	server := gin.Default()
 
 	// Step 5 - Register the routes
-	routes.RegisterRoutes(server, services)
+	routes.RegisterRoutes(server, &services)
+
+	// Step 6 - Start the Gin server
+	port := os.Getenv("GIN_SERVER_PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Fatal(server.Run(":" + port))
 }

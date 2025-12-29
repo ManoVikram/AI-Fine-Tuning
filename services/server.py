@@ -29,7 +29,7 @@ class GeneralService(service_pb2_grpc.GeneralServiceServicer):
         
         response = self.answer_query(query)
 
-        return service_pb2_grpc.GeneralServiceResponse(answer=response)
+        return service_pb2.GeneralServiceResponse(answer=response)
 
 def serve():
     # Step 0 - Load the environment variables
@@ -43,7 +43,7 @@ def serve():
     service_pb2_grpc.add_GeneralServiceServicer_to_server(servicer=GeneralService(), server=server)
 
     # Step 3 - Bind the server to a port
-    grpc_server_port = {os.getenv('GRPC_SERVER_PORT', '50051')}
+    grpc_server_port = os.getenv('GRPC_SERVER_PORT', '50051')
     server.add_insecure_port(f"[::]:{grpc_server_port}")
 
     # Step 4 - Start the server
