@@ -1,12 +1,41 @@
+import os
+from dotenv import load_dotenv
 import grpc
 from concurrent import futures
+
+from openai import OpenAI
 from proto import service_pb2_grpc, service_pb2
 
 class GeneralService(service_pb2_grpc.GeneralServiceServicer):
     def __init__(self):
         super().__init__()
 
+    def answer_query(self, query):
+        client = OpenAI()
+        
+        response = client.responses.create(
+            model="ft:gpt-4o-mini-2024-07-18:personal::CrqMnjE8",
+            input=[
+                {"role": "developer", "content": "You are a helpful assistant you helps with user queries."},
+                {"role": "user", "content": query}
+            ]
+        )
+        
+        return response.output_text
+
+
+    def Ask(self, request, context):
+        query = request.query
+        
+        response = self.answer_query(query)
+
+        return service_pb2_grpc.GeneralServiceResponse(answer=response)
+
 def serve():
+    # Step 0 - Load the environment variables
+    load_dotenv()
+    assert os.getenv("OPENAI_API_KEY"), "OPENAI_API_KEY is not set in the environment variables."
+
     # Step 1 - Initialize the gRPC server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
