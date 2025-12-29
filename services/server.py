@@ -43,11 +43,12 @@ def serve():
     service_pb2_grpc.add_GeneralServiceServicer_to_server(servicer=GeneralService(), server=server)
 
     # Step 3 - Bind the server to a port
-    server.add_insecure_port("[::]:50051")
+    grpc_server_port = {os.getenv('GRPC_SERVER_PORT', '50051')}
+    server.add_insecure_port(f"[::]:{grpc_server_port}")
 
     # Step 4 - Start the server
     server.start()
-    print("gRPC server started on port 50051...")
+    print(f"gRPC server started on port {grpc_server_port}...")
 
     # Step 5 - Keep the server running until terminated
     server.wait_for_termination()
